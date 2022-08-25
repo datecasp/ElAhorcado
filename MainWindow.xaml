@@ -1,0 +1,201 @@
+﻿<Window x:Class="ElAhorcado.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ElAhorcado"
+        mc:Ignorable="d"
+        Title="EL AHORCADO" Name="winJuego" WindowState="Maximized" Foreground="White">
+    <!-- AllowsTransparency="True" -->
+    <Grid>
+        <Image Source="Imagenes/portada.png" ></Image>
+
+        <Grid Name="btnIntro">
+            <Button Content="EMPEZAR" Click="btnIntro_Click" HorizontalAlignment="Right" Margin="0,0,150,150" VerticalAlignment="Bottom" Width="176" Height="61"/>
+        </Grid>
+
+        <!--#region intro-->
+
+        <Grid Name="grdPalabra" Visibility="Hidden" Width="350" Height="200" VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FF52E6D2">
+            <TextBlock Name="lblIntroPalabr" Text="Introduce la palabra a buscar" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8,43,8,0" FontSize="18"/>
+            <TextBox Name="boxIntroPalabra" Width="300" Height="30" FontSize="18" CharacterCasing="Upper"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBox>
+            <Button Name="btnIntroPalabra" Click="btnIntroPalabra_Click"  Content="Aceptar" Width="150" Height="50" Margin="98,131,102,19"></Button>
+        </Grid>
+
+        <!--#endregion-->
+
+        <!--#region  Juego-->
+
+        <Grid Name="grdJuego" Visibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White" >
+            <TextBlock x:Name="txtIntroLetra"
+            Text="Introduce una letra: "
+            FontSize="28"
+            HorizontalAlignment="Left"
+            Margin="58,148,0,0"
+            TextWrapping="Wrap"
+            VerticalAlignment="Top" 
+            Foreground="Black"/>
+
+            <TextBox x:Name="boxIntroLetra"
+            FontSize="28"
+            CharacterCasing="Upper"
+            HorizontalAlignment="Left"
+            Margin="336,148,0,0"
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="80" 
+            Foreground="Black"/>
+
+            <Button x:Name="btnChequeaLetra"
+            Content="Probar letra"
+            Margin="0,148,350,0"
+            FontSize="28"
+            VerticalAlignment="Top" HorizontalAlignment="Right" Width="250" Height="50"
+            Click="btnChequea_Click"
+           />
+
+            <TextBlock x:Name="txtAcierta"
+            Text="Palabra a acertar: "
+            FontSize="28"
+            Foreground="Black"
+            HorizontalAlignment="Left"
+            Margin="58,248,0,0"
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"/>
+
+            <TextBlock x:Name="txtLineas"
+            Text=""
+            Foreground="Black"
+            FontSize="28"
+            HorizontalAlignment="Left"
+            Margin="336,248,0,0"
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"/>
+
+            <!--#region  fallos-->
+
+            <TextBlock x:Name="txtFallos"
+            Text="Letras falladas:"
+            FontSize="28"
+            Foreground="Black"
+            HorizontalAlignment="Left"
+            Margin="58,346,0,0"
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"/>
+
+            <TextBox x:Name="boxFalloUno"
+            FontSize="28"
+            Foreground="Black"
+            HorizontalAlignment="Left"
+            Margin="58,431,0,0"
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="80"/>
+
+            <TextBox x:Name="boxFalloDos"
+            FontSize="28"
+            Foreground="Black"
+            HorizontalAlignment="Left"
+            Margin="218,431,0,0"
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="80"/>
+
+            <TextBox x:Name="boxFalloTres"
+            FontSize="28"
+            Foreground="Black"
+            HorizontalAlignment="Left"
+            Margin="382,431,0,0"
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="80"/>
+
+            <TextBox x:Name="boxFalloCuatro"
+            FontSize="28"
+            Foreground="Black"
+            HorizontalAlignment="Left"
+            Margin="58,516,0,0"
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="80"/>
+
+            <TextBox x:Name="boxFalloCinco"
+            FontSize="28"
+            Foreground="Black"
+            HorizontalAlignment="Left"
+            Margin="218,516,0,0"
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="80"/>
+
+            <TextBox x:Name="boxFalloSeis"
+            FontSize="28"
+            Foreground="Black"
+            HorizontalAlignment="Left"
+            Margin="382,516,0,0"
+            TextWrapping="Wrap"
+            VerticalAlignment="Top"
+            Width="80"/>
+
+            <!--#endregion-->
+
+            <Button x:Name="btnRendirse"
+            Content="Rendirse"
+            Margin="0,0,150,50"
+            FontSize="28"
+            VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="250" Height="50" 
+            Click="btnRendirse_Click"
+                    />
+
+            <TextBlock x:Name="txtRecibido"
+            HorizontalAlignment="Left"
+                   Margin="58,649,0,0"
+                   Text=""
+                   Foreground="Black"
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Top"/>
+
+            <Image x:Name="imgAhorcado"
+               Source="Imagenes/dib1.png"
+               HorizontalAlignment="Right"
+               Height="622"
+               Margin="0,200,100,0"
+               VerticalAlignment="Top"
+               Width="571">
+
+            </Image>
+        </Grid>
+
+        <!--#endregion-->
+
+        <!--#region Final-->
+        <Grid Name="grdFinal" Visibility="Hidden">
+            <Grid Name="grdOver" Visibility="Hidden">
+                <TextBlock Name="lblFinal" Text="GAME OVER" FontSize="200" Foreground="Red" Background="#3F7FFFD4" Margin="-220,-28,-220,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="ExtraBold" Height="270"/>
+            </Grid>
+            <Grid Name="grdGanar" Visibility="Hidden">
+                <TextBlock Name="lblGanar" Text=" ACERTASTE " FontSize="200" Foreground="#FF005DFF" Background="#3FF97FFF" Margin="-220,-28,-220,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="ExtraBold" Height="270"/>
+            </Grid>
+            
+            <Button x:Name="btnVolverFinal"
+            Content="Volver a jugar"
+            Margin="0,0,150,50"
+            FontSize="28"
+            VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="250" Height="50"
+            Click="btnVolver_Click">
+            </Button>
+            
+
+            <Button x:Name="btnCerrarFinal"
+            Content="Salir"
+            Margin="150,0,0,50"
+            FontSize="28"
+            VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="250" Height="50"
+            Click="btnCerrar_Click">
+            </Button>
+            
+        </Grid>
+
+        <!--#endregion-->
+    </Grid>
+</Window>
