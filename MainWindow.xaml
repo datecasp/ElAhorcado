@@ -16,10 +16,11 @@
 
         <!--#region intro-->
 
-        <Grid Name="grdPalabra" Visibility="Hidden" Width="350" Height="200" VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FF52E6D2">
-            <TextBlock Name="lblIntroPalabr" Text="Introduce la palabra a buscar" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8,43,8,0" FontSize="18"/>
-            <TextBox Name="boxIntroPalabra" Width="300" Height="30" FontSize="18" CharacterCasing="Upper"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBox>
-            <Button Name="btnIntroPalabra" Click="btnIntroPalabra_Click"  Content="Aceptar" Width="150" Height="50" Margin="98,131,102,19"></Button>
+        <Grid Name="grdPalabra" Visibility="Hidden" Width="430" Height="220" VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FF52E6D2">
+            <TextBlock Name="lblIntroPalabr" Text="Introduce la palabra a buscar" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8,35,8,0" FontSize="18"/>
+            <TextBox Name="boxIntroPalabra" Width="390" Height="30" FontSize="18" CharacterCasing="Upper"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBox>
+            <Button Name="btnIntroPalabra" Click="btnIntroPalabra_Click" Content="Aceptar" Width="175" Height="50" HorizontalAlignment="Left" Margin="25,150,0,20"></Button>
+            <Button Name="btnPalabraAleatoria" Click="btnPalabraAleatoria_Click" Content="Aleatoria (Internet)" Width="190" Height="50" HorizontalAlignment="Right" Margin="0,150,25,20"></Button>
         </Grid>
 
         <!--#endregion-->
@@ -39,6 +40,9 @@
             <TextBox x:Name="boxIntroLetra"
             FontSize="28"
             CharacterCasing="Upper"
+            MaxLength="1"
+            PreviewTextInput="boxIntroLetra_PreviewTextInput"
+            DataObject.Pasting="boxIntroLetra_Pasting"
             HorizontalAlignment="Left"
             Margin="336,148,0,0"
             TextWrapping="Wrap"

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Media;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -21,6 +23,9 @@ namespace ElAhorcado
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static readonly HttpClient clienteHttp = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+        private static readonly Random aleatorio = new Random();
+
         //variables del juego
         private Char[] array;
         private string[] palabraTapada;
@@ -36,6 +41,7 @@ namespace ElAhorcado
         public MainWindow()
         {
             InitializeComponent();
+            clienteHttp.DefaultRequestHeaders.UserAgent.ParseAdd("ElAhorcado/1.0");
         }
 
         private void btnIntro_Click(object sender, RoutedEventArgs e)
@@ -48,22 +54,73 @@ namespace ElAhorcado
 
         private void btnIntroPalabra_Click(object sender, RoutedEventArgs e)
         {
-            grdPalabra.Visibility = Visibility.Visible;
+            iniciarPartida(boxIntroPalabra.Text);
+        }
+
+        private async void btnPalabraAleatoria_Click(object sender, RoutedEventArgs e)
+        {
+            btnPalabraAleatoria.IsEnabled = false;
+            lblIntroPalabr.Text = "Buscando una palabra...";
+
+            try
+            {
+                const string url = "https://es.wiktionary.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=categories&cllimit=max&clcategories=Categor%C3%ADa%3AES%3ALemas&format=xml";
+                string respuesta = await clienteHttp.GetStringAsync(url);
+                XDocument documento = XDocument.Parse(respuesta);
+                var candidatas = documento.Descendants("pages").Elements("page")
+                    .Where(pagina => pagina.Descendants("cl")
+                        .Any(categoria => (string)categoria.Attribute("title") == "Categoría:ES:Lemas"))
+                    .Select(pagina => (string)pagina.Attribute("title"))
+                    .Where(titulo => !string.IsNullOrWhiteSpace(titulo))
+                    .Where(titulo => titulo.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length <= 3)
+                    .Where(titulo => titulo.All(caracter => char.IsLetter(caracter) || char.IsWhiteSpace(caracter)))
+                    .ToList();
+
+                if (candidatas.Count == 0)
+                {
+                    throw new InvalidOperationException("Wikcionario no devolvió lemas españoles adecuados.");
+                }
+
+                iniciarPartida(candidatas[aleatorio.Next(candidatas.Count)]);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No se pudo obtener una palabra de Internet. Comprueba la conexión e inténtalo de nuevo.\n\n" + ex.Message, "ATENCIÓN");
+            }
+            finally
+            {
+                lblIntroPalabr.Text = "Introduce la palabra a buscar";
+                btnPalabraAleatoria.IsEnabled = true;
+            }
+        }
+
+        private void iniciarPartida(string palabra)
+        {
+            palabra = palabra.Trim().ToUpperInvariant();
+            if (palabra.Length == 0 || !palabra.Any(char.IsLetter))
+            {
+                MessageBox.Show("Introduce una palabra antes de empezar", "ATENCIÓN");
+                return;
+            }
+
             acierto = 0;
-            array = boxIntroPalabra.Text.ToCharArray();
+            numAciertos = 0;
+            numLetras = 0;
+            fallosCheq = 0;
+            array = palabra.ToCharArray();
             palabraTapada = new string[array.Length];
             txtLineas.Text = "";
-            fallosCheq = 0;
-            if (array.Length == 0)
-            {
-                MessageBox.Show("Primero introduce una palabra", "ATENCIÓN");
-            }
-            else
-            {
-                grdPalabra.Visibility = Visibility.Hidden;
-                grdJuego.Visibility = Visibility.Visible;
-                pintaLineas();
-            }
+            boxIntroLetra.Text = "";
+            boxFalloUno.Text = "";
+            boxFalloDos.Text = "";
+            boxFalloTres.Text = "";
+            boxFalloCuatro.Text = "";
+            boxFalloCinco.Text = "";
+            boxFalloSeis.Text = "";
+            imgAhorcado.Source = new BitmapImage(new Uri("Imagenes/dib1.png", UriKind.Relative));
+            grdPalabra.Visibility = Visibility.Hidden;
+            grdJuego.Visibility = Visibility.Visible;
+            pintaLineas();
         }
 
         private void btnChequea_Click(object sender, RoutedEventArgs e)
@@ -81,9 +138,12 @@ namespace ElAhorcado
                     if (array[i].ToString().Equals(letra))
                     {
                         acierto = 1;
-                        palabraTapada[i] = array[i].ToString();
+                        if (palabraTapada[i] != array[i].ToString())
+                        {
+                            palabraTapada[i] = array[i].ToString();
+                            numAciertos++;
+                        }
                         pintaLineas();
-                        numAciertos++;
                         SystemSounds.Asterisk.Play();
                         if (numAciertos == numLetras)
                         {
@@ -103,6 +163,26 @@ namespace ElAhorcado
                 }
             }
             boxIntroLetra.Text = "";
+        }
+
+        private void boxIntroLetra_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = e.Text.Length != 1 || !char.IsLetter(e.Text, 0);
+        }
+
+        private void boxIntroLetra_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (!e.DataObject.GetDataPresent(DataFormats.UnicodeText, true))
+            {
+                e.CancelCommand();
+                return;
+            }
+
+            string textoPegado = e.DataObject.GetData(DataFormats.UnicodeText) as string;
+            if (string.IsNullOrEmpty(textoPegado) || textoPegado.Length != 1 || !char.IsLetter(textoPegado, 0))
+            {
+                e.CancelCommand();
+            }
         }
 
         private void pintaLineas()
